@@ -8,6 +8,7 @@ use App\Models\Diary\Diary;
 use App\Modules\Diary\Exceptions\DiaryActionException;
 use Throwable;
 use Illuminate\Database\QueryException;
+use InvalidArgumentException;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 
@@ -16,26 +17,30 @@ class DiaryAction
     /**
      * 日記を新規作成する
      * @param array<string, mixed> $validatedData バリデーション済みのデータ
-     * @param int $userId ユーザーID
+     * @param int $postedBy 投稿者のユーザーID
      * @throws DiaryActionException 日記の作成に失敗した場合
      */
     public function create(array $validatedData, int $userId): void
     {
         try {
-            $entryDatetime = Carbon::parse($validatedData['entry_datetime']);
+            $entryDate = Carbon::parse($validatedData['entry_date']);
 
             Diary::create([
-                'user_id' => $userId,
-                'entryDatetime' => $entryDatetime,
+                'postedBy' => $userId,
+                'entryDate' => $entryDate,
                 'title' => $validatedData['title'],
                 'content' => $validatedData['content'],
             ]);
 
+        } catch (InvalidArgumentException $e) {
+            // Carbon::parse() が例外をスローした場合
+            Log::error('日付のパースエラーが発生: ' . $e->getMessage(), ['user_id' => $userId, 'data' => $validatedData]);
+            throw new DiaryActionException('日記の作成に失敗しました。（日付のパースエラー）', 400, $e);
         } catch (QueryException $e) {
             Log::error('日記の作成中にDBエラーが発生: ' . $e->getMessage(), ['user_id' => $userId, 'data' => $validatedData]);
             throw new DiaryActionException('日記の作成に失敗しました。（データベースエラー）', 500, $e);
         } catch (Throwable $e) {
-            // Carbon::parse() が例外をスローした場合など、その他のエラー
+            // その他のエラー
             Log::error('日記の作成中に予期せぬエラーが発生: ' . $e->getMessage(), ['user_id' => $userId, 'data' => $validatedData]);
             throw new DiaryActionException('日記の作成に失敗しました。（予期せぬエラー）', 500, $e);
         }
@@ -66,13 +71,13 @@ class DiaryAction
     /**
      * 特定の日付にユーザーが書いた日記を取得する
      * @param Carbon $date 日付
-     * @param int $userId ユーザーID
+     * @param int $postedBy 投稿者のユーザーID
      * @return Diary|null 日記モデル、存在しない場合はnull
      */
-    public function findDiaryByDateForUser(Carbon $date, int $userId): ?Diary
+    public function findByUserIdAndEntryDate(Carbon $date, int $userId): ?Diary
     {
-        return Diary::where('user_id', $userId)
-            ->whereDate('entryDatetime', $date)
+        return Diary::where('postedBy', $userId)
+            ->whereDate('entryDate', $date)
             ->first();
     }
 }

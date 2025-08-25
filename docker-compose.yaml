@@ -29,10 +29,11 @@ services:
     image: mysql:8.0 # MySQL 8.0 の公式イメージを使用
     platform: linux/x86_64 # M1 Macなどの場合、互換性のため追加すると良い
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD} # .envファイルから読み込む
-      MYSQL_DATABASE: ${DB_DATABASE}
-      MYSQL_USER: ${DB_USER}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
+      - TZ=Asia/Tokyo
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD} # .envファイルから読み込む
+      - MYSQL_DATABASE=${DB_DATABASE}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
     env_file:
       - .env # プロジェクトルートの.envファイルを読み込む
     volumes:

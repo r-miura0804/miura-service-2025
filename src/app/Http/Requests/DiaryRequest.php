@@ -23,9 +23,9 @@ class DiaryRequest extends FormRequest
      */
     public function rules(): array
     {
-        // StoreとUpdateの両方に共通のルールを記述
+        // createとupdateの両方に共通のルールを記述
         return [
-            'entry_datetime' => 'required|date',
+            'entry_date' => 'required|date',
             'title' => 'required|string|max:255',
             'content' => 'required|string',
         ];
@@ -39,8 +39,8 @@ class DiaryRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'entry_datetime.required' => '日付と時刻は必須です。',
-            'entry_datetime.date' => '日付と時刻が有効な形式ではありません。',
+            'entry_date.required' => '日付は必須です。',
+            'entry_date.date' => '日付が有効な形式ではありません。',
             'title.required' => 'タイトルは必須です。',
             'title.string' => 'タイトルは文字列である必要があります。',
             'title.max' => 'タイトルは255文字以内で入力してください。',

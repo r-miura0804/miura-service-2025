@@ -69,7 +69,7 @@
                 dateClick: function(info) {
                     const clickedDate = info.dateStr;
                     // クリックされた日付の日記新規作成or編集ページへ遷移
-                    window.location.href = `/diary/${clickedDate}/manage`;
+                    window.location.href = `/diary/${clickedDate}`;
                 },
             });
             calendar.render();

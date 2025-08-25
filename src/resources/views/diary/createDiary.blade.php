@@ -47,10 +47,10 @@
             </div>
         @endif
 
-        <form action="{{ route('diary.create') }}" method="POST">
+        <form action="/diary" method="POST">
             @csrf
-            <label for="entry_datetime">日付</label>
-            <input type="datetime-local" id="entry_datetime" name="entry_datetime" value="{{ old('entry_datetime', $entry_datetime_default ?? '') }}" required readonly>
+            <label for="entry_date">日付</label>
+            <input type="date" id="entry_date" name="entry_date" value="{{ old('entry_date', $entry_date_default->format('Y-m-d') ?? '') }}" required readonly>
 
             <label for="title">タイトル:</label>
             <input type="text" id="title" name="title" value="{{ old('title') }}" required>
