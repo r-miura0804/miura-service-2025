@@ -47,7 +47,7 @@
             </div>
         @endif
 
-        <form action="/diary" method="POST">
+        <form action="{{ route('diary.create') }}" method="POST">
             @csrf
             <label for="entry_date">日付</label>
             <input type="date" id="entry_date" name="entry_date" value="{{ old('entry_date', $entry_date_default->format('Y-m-d') ?? '') }}" required readonly>
