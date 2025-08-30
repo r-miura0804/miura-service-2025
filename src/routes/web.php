@@ -9,12 +9,12 @@ Route::get('/', function () {
 });
 
 // 日記のルート設定
-Route::get('/diary', function () {
+Route::get('/calendar', function () {
     return view('diary.calendar');
 })->name('diary.calendar');
-Route::get('/diary/{date}/manage', [DiaryController::class, 'manage'])
+Route::get('/diary/{date}', [DiaryController::class, 'manage'])
     ->name('diary.manage');
-Route::post('/diary/createDiary', [DiaryController::class, 'createDiary'])
+Route::post('/diary', [DiaryController::class, 'create'])
     ->name('diary.create');
-Route::put('/diary/updateDiary/{diaryId}', [DiaryController::class, 'updateDiary'])
+Route::put('/diary/{diaryId}', [DiaryController::class, 'update'])
     ->name('diary.update');

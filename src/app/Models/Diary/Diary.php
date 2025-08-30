@@ -6,17 +6,18 @@ namespace App\Models\Diary;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
+use Carbon\Carbon;
 
 /**
  * 日記モデル
  *
  * @property int $id
- * @property int $user_id ユーザーID
- * @property \Carbon\Carbon $entryDatetime 日記の日時
+ * @property int $postedBy 投稿者のユーザーID
+ * @property Carbon $entryDate 日記投稿日
  * @property string|null $title 日記のタイトル
  * @property string|null $content 日記の内容
- * @property \Carbon\Carbon|null $created_at 作成日時
- * @property \Carbon\Carbon|null $updated_at 更新日時
+ * @property Carbon|null $createdAt 作成日時
+ * @property Carbon|null $updatedAt 更新日時
  */
 class Diary extends Model
 {
@@ -27,15 +28,21 @@ class Diary extends Model
      */
     protected $table = 'diaries';
 
+    // タイムスタンプのカラム名をカスタマイズ
+    public const CREATED_AT = 'createdAt';
+    public const UPDATED_AT = 'updatedAt';
+
     protected $fillable = [
-        'user_id',
-        'entryDatetime',
+        'postedBy',
+        'entryDate',
         'title',
         'content',
     ];
 
     protected $casts = [
-        'entryDatetime' => 'datetime',
+        'entryDate' => 'date',
+        'createdAt' => 'datetime',
+        'updatedAt' => 'datetime',
     ];
 
     /**

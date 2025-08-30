@@ -6,6 +6,7 @@ use App\Models\Diary\Diary;
 use App\Http\Requests\DiaryRequest;
 use App\Modules\Diary\UseCase\DiaryAction;
 use App\Modules\Diary\Exceptions\DiaryActionException;
+use InvalidArgumentException;
 use Throwable;
 use Carbon\Carbon;
 
@@ -21,7 +22,7 @@ class DiaryController extends Controller
     /**
      * 日記の新規登録
      */
-    public function createDiary(DiaryRequest $request, DiaryAction $action)
+    public function create(DiaryRequest $request, DiaryAction $action)
     {
         try {
             $action->create($request->validated(), $this->getCurrentUserId());
@@ -38,7 +39,7 @@ class DiaryController extends Controller
     /**
      * 日記の更新する
      */
-    public function updateDiary(DiaryRequest $request, DiaryAction $action, int $diaryId)
+    public function update(DiaryRequest $request, DiaryAction $action, int $diaryId)
     {
         $diary = Diary::findOrFail($diaryId);
         
@@ -60,15 +61,19 @@ class DiaryController extends Controller
      */
     public function manage(string $date, DiaryAction $action)
     {
-        // URLから渡された日付文字列をCarbonオブジェクトに変換（時刻は00:00:00にする）
-        $targetDate = Carbon::parse($date)->startOfDay();
+        try {
+            // URLから渡された日付文字列をCarbonオブジェクトに変換
+            $targetDate = Carbon::parse($date)->startOfDay();
+        } catch (InvalidArgumentException $e) {
+            return redirect()->route('diary.calendar')->withErrors(['date' => '予期せぬエラーが発生しました。']);
+        }
 
         if (!$targetDate) {
             return redirect()->route('diary.calendar')->withErrors(['date' => '無効な日付です。']);
         }
 
         // 特定の日付にユーザーが書いた日記を取得
-        $diary = $action->findDiaryByDateForUser($targetDate, $this->getCurrentUserId());
+        $diary = $action->findByUserIdAndEntryDate($targetDate, $this->getCurrentUserId());
 
         if ($diary) {
             return $this->showEditDiaryForm($diary);
@@ -80,9 +85,9 @@ class DiaryController extends Controller
     /**
      * 日記の作成フォームを表示する
      */
-    public function showCreateDiaryForm(Carbon $entryDatetime)
+    public function showCreateDiaryForm(Carbon $entryDate)
     {
-        return view('diary.createDiary', ['entry_datetime_default' => $entryDatetime]);
+        return view('diary.createDiary', ['entry_date_default' => $entryDate]);
     }
 
     /**

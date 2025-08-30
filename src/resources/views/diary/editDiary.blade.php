@@ -50,8 +50,8 @@
         <form action="{{ route('diary.update', $diary->id) }}" method="POST">
             @csrf
             @method('PUT') 
-            <label for="entry_datetime">日付</label>
-            <input type="datetime-local" id="entry_datetime" name="entry_datetime" value="{{ old('entry_datetime', $diary->entryDatetime->format('Y-m-d\TH:i')) }}"  readonly>
+            <label for="entry_date">日付</label>
+            <input type="date" id="entry_date" name="entry_date" value="{{ old('entry_date', $diary->entryDate->format('Y-m-d')) }}"  readonly>
 
             <label for="title">タイトル:</label>
             <input type="text" id="title" name="title" value="{{ old('title', $diary->title) }}" required>
